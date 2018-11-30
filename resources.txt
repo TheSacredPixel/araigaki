@@ -1,0 +1,9 @@
+resources:
+
+https://www.flutopedia.com/sound_color.htm
+https://roelhollander.eu/en/tuning-frequency/sound-light-colour/
+https://github.com/lucasb-eyer/go-colorful
+https://github.com/nfnt/resize
+https://golang.org/pkg/image/
+https://www.devdungeon.com/content/working-images-go
+http://legacy.earlham.edu/~tobeyfo/musictheory/Book1/FFH1_CH1/1M_RatiosCommas1.html
