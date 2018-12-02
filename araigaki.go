@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/lucasb-eyer/go-colorful"
+	"github.com/nsf/termbox-go"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
@@ -19,7 +20,7 @@ var (
 func init() {
 	flag.StringVar(&filename, "file", "", "file to process")
 	flag.StringVar(&filename, "f", "", "file to process (shorthand)")
-	flag.BoolVar(&verbose, "v", false, "enable verbose output. THIS SLOWS EXECUTION DOWN TO AN ABSURD DEGREE. NOT RECOMMENDED")
+	flag.BoolVar(&verbose, "v", false, "enable verbose output. THIS SLOWS EXECUTION DOWN TO AN ABSURD DEGREE. FOR TESTING ONLY")
 }
 
 func main() {
@@ -28,6 +29,8 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
+	//InitDisplay()
+	//defer termbox.Close()
 
 	//load image
 	fmt.Print("Opening file... ")

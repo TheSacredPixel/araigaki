@@ -50,22 +50,22 @@ func GetNotes() [13]Note {
 //Interval : basic interval struct
 type Interval struct {
 	ratio [2]int
-	name string
+	name  string
 }
 
-//Intervals : list of intervals
-var Intervals = [12]Interval {
+//Intervals : list of intervals, with array index being distance in semitones
+var Intervals = [13]Interval{
 	Interval{[2]int{1, 1}, "unison"},
 	Interval{[2]int{25, 24}, "minor 2nd"},
 	Interval{[2]int{9, 8}, "major 2nd"},
 	Interval{[2]int{6, 5}, "minor 3rd"},
-	Interval{[2]int{5,4}, "major 3rd"},
-	Interval{[2]int{4,3}, "perfect 4th"},
-	Interval{[2]int{45/32}, "augmented 4th / diminished 5th"},
-	Interval{[2]int{3,4}, "perfect 5th"},
-	Interval{[2]int{8,5}, "minor 6th"},
-	Interval{[2]int{5,3}, "major 6th"},
-	Interval{[2]int{9,5}, "minor 7th"},
-	Interval{[2]int{15,8}, "major 7th"},
-	Interval{[2]int{2,1}, "octave"},
+	Interval{[2]int{5, 4}, "major 3rd"},
+	Interval{[2]int{4, 3}, "perfect 4th"},
+	Interval{[2]int{45 / 32}, "augmented 4th / diminished 5th"},
+	Interval{[2]int{3, 4}, "perfect 5th"},
+	Interval{[2]int{8, 5}, "minor 6th"},
+	Interval{[2]int{5, 3}, "major 6th"},
+	Interval{[2]int{9, 5}, "minor 7th"},
+	Interval{[2]int{15, 8}, "major 7th"},
+	Interval{[2]int{2, 1}, "octave"},
 }
