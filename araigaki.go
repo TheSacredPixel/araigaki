@@ -14,12 +14,15 @@ import (
 
 var (
 	filename string
-	verbose  bool
+	verbose, lite bool
+	dx, dy int
+	lineBuffer []string
 )
 
 func init() {
 	flag.StringVar(&filename, "file", "", "file to process")
 	flag.StringVar(&filename, "f", "", "file to process (shorthand)")
+	flag.BoolVar(&lite, "l", false, "lite output")
 	flag.BoolVar(&verbose, "v", false, "enable verbose output. THIS SLOWS EXECUTION DOWN TO AN ABSURD DEGREE. FOR TESTING ONLY")
 }
 
@@ -29,28 +32,31 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
-	//InitDisplay()
-	//defer termbox.Close()
+	if !lite {
+		InitDisplay()
+		defer termbox.Close()
+		dx, dy = termbox.Size()
+	}
 
 	//load image
-	fmt.Print("Opening file... ")
+	out("Opening file... ", PosBody)
 	imageFile, err := os.Open(filename)
 	if err != nil {
-		fmt.Println(err)
+		out(fmt.Sprintf("%s\n", err), PosBody)
 		os.Exit(1)
 	}
-	fmt.Println("Success")
+	out("Success\n", PosBody)
 
 	//decode image
-	fmt.Print("Decoding image... ")
+	out("Decoding image... ", PosBody)
 	imageData, imageType, err := image.Decode(imageFile)
 	if err != nil {
-		fmt.Println(err)
+		out(fmt.Sprintf("%s\n", err), PosBody)
 		os.Exit(1)
 	}
 	imageFile.Close()
 
-	fmt.Printf("Identified type %s\n", imageType)
+	out(fmt.Sprintf("Identified type %s\n", imageType), PosBody)
 	notes := GetNotes()
 	ratings := make(map[string]int)
 	for _, note := range notes {
@@ -60,8 +66,8 @@ func main() {
 	//start iteration
 	maxX, maxY, minX, minY := imageData.Bounds().Max.X, imageData.Bounds().Max.Y, imageData.Bounds().Min.X, imageData.Bounds().Min.Y
 	width, height := maxX-minX, maxY-minY
-	fmt.Printf("Image dimensions: %d x %d. Total iterations to run: %d\n\n", width, height, width*height)
-	fmt.Println("Running. This may take a while...")
+	out(fmt.Sprintf("Image dimensions: %d x %d. Total iterations to run: %d\n\n", width, height, width*height), PosBody)
+	out("Running. This may take a while...\n", PosBody)
 	start := time.Now()
 	for y := 0; y < imageData.Bounds().Max.Y; y++ {
 		for x := 0; x < imageData.Bounds().Max.X; x++ {
@@ -94,8 +100,25 @@ func main() {
 		}
 	}
 
-	fmt.Printf("\nDone in %s!\nResults: %v\n", time.Since(start), ratings)
+	out(fmt.Sprintf("\nDone in %s!\nResults: %v\n", time.Since(start), ratings), PosBody)
 
+}
+
+func out(text string, pos Pos) {
+	if lite {
+		fmt.Print(text)
+	} else {
+		x, y := 0, 0
+		switch pos {
+		case PosBody:
+			x = 1
+			y = dy-2
+		}
+		PastLines(x, y)
+		WriteLine(text, x, y)
+		termbox.Flush()
+		AddToBuffer(text, )
+	}
 }
 
 //comment out lines that use this later
