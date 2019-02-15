@@ -9,20 +9,26 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"os"
+	"sort"
 	"time"
 )
 
 var (
-	filename string
+	filename      string
 	verbose, lite bool
-	dx, dy int
-	lineBuffer []string
+	dx, dy        int
+	lineBuffer    []string
 )
+
+type result struct {
+	name string
+	num  int
+}
 
 func init() {
 	flag.StringVar(&filename, "file", "", "file to process")
 	flag.StringVar(&filename, "f", "", "file to process (shorthand)")
-	flag.BoolVar(&lite, "l", false, "lite output")
+	flag.BoolVar(&lite, "l", true, "lite output") //TEMP true
 	flag.BoolVar(&verbose, "v", false, "enable verbose output. THIS SLOWS EXECUTION DOWN TO AN ABSURD DEGREE. FOR TESTING ONLY")
 }
 
@@ -57,9 +63,8 @@ func main() {
 	imageFile.Close()
 
 	out(fmt.Sprintf("Identified type %s\n", imageType), PosBody)
-	notes := GetNotes()
 	ratings := make(map[string]int)
-	for _, note := range notes {
+	for _, note := range NoteList {
 		ratings[note.name] = 0
 	}
 
@@ -86,7 +91,7 @@ func main() {
 			//compare to notes and find closest
 			minDistance := 5.0
 			var closestNote Note
-			for _, note := range notes {
+			for _, note := range NoteList {
 				if dist := color.DistanceLab(note.color); dist < minDistance {
 					vOut(fmt.Sprintf("Distance from %s: %f ", note.name, dist))
 					closestNote = note
@@ -100,7 +105,23 @@ func main() {
 		}
 	}
 
-	out(fmt.Sprintf("\nDone in %s!\nResults: %v\n", time.Since(start), ratings), PosBody)
+	//parse results
+	var results []result
+	for key, value := range ratings {
+		results = append(results, result{key, value})
+	}
+
+	//sort results descending
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].num > results[j].num
+	})
+
+	out(fmt.Sprintf("\nDone in %s!\nResults: %v\n", time.Since(start), results), PosBody)
+
+	//primary interval
+	intr := GetIntervalByName(results[0].name, results[1].name)
+
+	out(fmt.Sprintf("Interval: %v\n", intr), PosBody)
 
 }
 
@@ -112,16 +133,16 @@ func out(text string, pos Pos) {
 		switch pos {
 		case PosBody:
 			x = 1
-			y = dy-2
+			y = dy - 2
 		}
 		PastLines(x, y)
 		WriteLine(text, x, y)
 		termbox.Flush()
-		AddToBuffer(text, )
+		AddToBuffer(text)
 	}
 }
 
-//comment out lines that use this later
+//TODO comment out lines that use this later
 func vOut(text string) {
 	if verbose {
 		fmt.Print(text)
